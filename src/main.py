@@ -2,9 +2,14 @@ from pytube import YouTube
 import ssl 
 from tqdm import tqdm # for progression bar
 from moviepy.editor import VideoFileClip
+import os
+
 
 
 ssl._create_default_https_context = ssl._create_unverified_context
+
+#api = TikTokApi()
+
 
 
 def download_video(url):
@@ -18,6 +23,11 @@ def download_video(url):
 
 
 def split_video(duration):
+
+    if not os.path.exists("bin"):
+        os.makedirs("bin")
+
+
     num_parts = int(video_duration / duration)
 
 
@@ -26,7 +36,8 @@ def split_video(duration):
         end_time = (i + 1) * duration
 
         part = video.subclip(start_time, end_time)
-        part.write_videofile(f"part{i+1}.mp4")
+        output_path = os.path.join("bin", f"part{i+1}.mp4")
+        part.write_videofile(output_path)
 
 
     if video_duration % duration != 0:
@@ -34,13 +45,14 @@ def split_video(duration):
         end_time = video_duration
 
         last_part = video.subclip(start_time, end_time)
-        last_part.write_videofile(f"part{num_parts + 1}.mp4")
+        output_path = os.path.join("bin", f"part{i+1}.mp4")
+        last_part.write_videofile(output_path)
 
+    os.remove("video.mp4")
 
 
 url = input("Enter your youtube video URL : ")
 download_video(url)
-
 
 
 video = VideoFileClip("video.mp4" )
@@ -53,11 +65,4 @@ if value < 10 or value > video_duration:
     exit()
 
 split_video(value)
-
-
-
-
-
-
-
 
